@@ -129,7 +129,9 @@ test('UPDATE_CART_QUANTITY', () =>{
     });
 
     expect(newState.cartOpen).toBe(true);
+    //ensure only the first item's quantity is updated to 3
     expect(newState.cart[0].purchaseQuantity).toBe(3);
+    //second item's quantity still remains as 2.
     expect(newState.cart[1].purchaseQuantity).toBe(2);
 
     expect(initialState.cartOpen).toBe(false);
@@ -146,6 +148,7 @@ test('CLEAR_CART', () =>{
 });
 
 test('TOGGLE_CART', () =>{
+    //expects cartOpen to be the opposite of its previous value each time the action is called.
     let newState = reducer(initialState, {
         type: TOGGLE_CART
     });

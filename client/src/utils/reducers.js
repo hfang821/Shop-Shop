@@ -37,6 +37,7 @@ export const reducer = (state,action) => {
         
         case ADD_TO_CART:
             return{
+                //...state to preserve everything else on state.
                 ...state, 
                 cartOpen: true,
                 cart: [...state.cart, action.product]
@@ -49,12 +50,14 @@ export const reducer = (state,action) => {
             };
 
         case REMOVE_FROM_CART:
+            //the use of filter() that only keeps the items that don't match the provided _id property
             let newState = state.cart.filter(product=> {
                 return product._id !== action._id;
             });
 
             return {
                 ...state,
+                //set the cartOpen to false when length of array=0
                 cartOpen: newState.length > 0,
                 cart: newState
             };
@@ -63,6 +66,7 @@ export const reducer = (state,action) => {
             return {
                 ...state,
                 cartOpen: true,
+                //use the map() method to create a new array as original state should be treated as immutable.
                 cart: state.cart.map(product => {
                     if(action._id === product._id) {
                         product.purchaseQuantity = action.purchaseQuantity;
@@ -81,6 +85,7 @@ export const reducer = (state,action) => {
         case TOGGLE_CART:
             return {
                 ...state,
+                //revert the cartOpen status
                 cartOpen: !state.cartOpen
             };
         //if it's none of these actions, do not update state at all and keep things the same!
