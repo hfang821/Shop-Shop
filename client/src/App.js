@@ -41,6 +41,7 @@ function App() {
     <ApolloProvider client={client}>
       <Router>
         <div>
+          {/* all the components between storeProvider jsx are the children of the storeProvider */}
           <StoreProvider>
             <Nav />
             <Routes>

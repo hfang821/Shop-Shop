@@ -34,6 +34,7 @@ function ProductList() {
   return (
     <div className="my-2">
       <h2>Our Products:</h2>
+      {/* since we are now retrieving products from the global state object */}
       {state.products.length ? (
         <div className="flex-row">
           {filterProducts().map((product) => (

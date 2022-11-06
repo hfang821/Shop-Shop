@@ -5,10 +5,14 @@ import { QUERY_CATEGORIES } from '../../utils/queries';
 import {useStoreContext} from "../../utils/GlobalState";
 
 function CategoryMenu() {
+  //call the useStoreContext hook to retrieve the current state from the global state object
+  //dispatch to update state
   const [state,dispatch] =useStoreContext();
+  //destructure the categories array out of the global state
   const {categories} = state;
   const {data: categoryData} = useQuery(QUERY_CATEGORIES);
-
+  //useQuery is a async function, so we cannot call dispatch on it as categoryData will not exist on load.
+  //useEffect hook is created specifically for this. As it not only runs on component load, but also when some form of state changes in that component.
   useEffect(() => {
     //if categoryData exists or has changed from the response of useQuery, then run dispatch()
     if(categoryData){

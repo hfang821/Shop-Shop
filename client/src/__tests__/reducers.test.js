@@ -44,6 +44,7 @@ const initialState = {
 };
 
 test('UPDATE_PRODUCTS', () => {
+    //reducer(state, actions)
     let newState = reducer(initialState, {
         type: UPDATE_PRODUCTS,
         products: [{}, {}]
@@ -54,6 +55,7 @@ test('UPDATE_PRODUCTS', () => {
 });
 
 test('UPDATE_CATEGORIES', () => {
+    //reducer(state, actions)
     let newState = reducer(initialState, {
         type: UPDATE_CATEGORIES,
         categories: [{},{}]

@@ -9,6 +9,8 @@ import spinner from '../assets/spinner.gif';
 
 function Detail() {
   const [state, dispatch] = useStoreContext();
+  //useParams hook returns an object of key/value pair of the dynamic params from the current URL that matched by the <Route path>
+  //Get the product id from the url
   const { id } = useParams();
 
   const [currentProduct, setCurrentProduct] = useState({});
@@ -18,15 +20,21 @@ function Detail() {
   const {products} = state;
 
   useEffect(() => {
+    //First check if there is data in our global state's products array
     if (products.length) {
+      //If there is, figure out which product is the current one that we want to display.
+      //Match the _id value with the id we grabbed from the useParams hook.
       setCurrentProduct(products.find((product) => product._id === id));
-    } else if(data) {
+    } //If we don't have any products in our global state(someone just sent you this url and first time you load this app.)
+    // Use the "data" returned from the useQuery hook tos set product data to the global state.
+    else if(data) {
       dispatch({
         type: UPDATE_PRODUCTS,
         products: data.products
       });
     }
-  }, [products,data,dispatch,id]);
+    //second arg: the dependency array (Hook's functionality is dependent on them to work and only runs when it detects that they've changed in value)
+  }, [products,data,dispatch,id]); //hook only trigger when the dependency array changes
 
   return (
     <>
@@ -48,7 +56,7 @@ function Detail() {
             src={`/images/${currentProduct.image}`}
             alt={currentProduct.name}
           />
-        </div>
+        </div> 
       ) : null}
       {loading ? <img src={spinner} alt="loading" /> : null}
     </>

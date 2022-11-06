@@ -18,6 +18,7 @@ export const reducer = (state,action) => {
         //if action type is the value of `UPDATE_PRODUCTS`, return a new state object with an updated products array
         case UPDATE_PRODUCTS:
             return{
+                //...: spread syntax that can copy the state object
                 ...state,
                 products: [...action.products],
             };
