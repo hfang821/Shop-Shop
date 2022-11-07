@@ -18,15 +18,32 @@ function Detail() {
 
   const { loading, data } = useQuery(QUERY_PRODUCTS);
 
-  const {products} = state;
+  const {products, cart} = state;
 
   const addToCart = () =>{
-    dispatch({
-      type: ADD_TO_CART,
-      product: {...currentProduct, purchaseQuantity: 1}
-    })
+    const itemInCart = cart.find((cartItem)=> cartItem._id === id);
+    
+    if(itemInCart){
+      dispatch({
+        type: UPDATE_CART_QUANTITY,
+        _id: id,
+        purchaseQuantity: parseInt(itemInCart.purchaseQuantity) +1
+      });
+    } else {
+      dispatch({
+        type: ADD_TO_CART,
+        product: {...currentProduct, purchaseQuantity: 1}
+      });
+    }
   }
   console.log(state);
+
+  const removeFromCart = () =>{
+    dispatch({
+      type: REMOVE_FROM_CART,
+      _id: currentProduct._id
+    });
+  };
 
   useEffect(() => {
     //First check if there is data in our global state's products array
@@ -58,7 +75,10 @@ function Detail() {
           <p>
             <strong>Price:</strong>${currentProduct.price}{' '}
             <button onClick={addToCart}>Add to Cart</button>
-            <button>Remove from Cart</button>
+            <button
+              disabled={!cart.find(product=>product._id===currentProduct._id)}
+              onClick={removeFromCart}
+            >Remove from Cart</button>
           </p>
 
           <img
