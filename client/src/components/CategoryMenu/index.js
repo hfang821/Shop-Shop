@@ -3,6 +3,7 @@ import {UPDATE_CATEGORIES, UPDATE_CURRENT_CATEGORY} from '../../utils/actions';
 import { useQuery } from '@apollo/client';
 import { QUERY_CATEGORIES } from '../../utils/queries';
 import {useStoreContext} from "../../utils/GlobalState";
+import {idbPromise} from "../../utils/helpers";
 
 function CategoryMenu() {
   //call the useStoreContext hook to retrieve the current state from the global state object
@@ -10,7 +11,7 @@ function CategoryMenu() {
   const [state,dispatch] =useStoreContext();
   //destructure the categories array out of the global state
   const {categories} = state;
-  const {data: categoryData} = useQuery(QUERY_CATEGORIES);
+  const {loading, data: categoryData} = useQuery(QUERY_CATEGORIES);
   //useQuery is a async function, so we cannot call dispatch on it as categoryData will not exist on load.
   //useEffect hook is created specifically for this. As it not only runs on component load, but also when some form of state changes in that component.
   useEffect(() => {
@@ -21,6 +22,16 @@ function CategoryMenu() {
         type: UPDATE_CATEGORIES,
         categories: categoryData.categories
        });
+       categoryData.categories.forEach(category=>{
+        idbPromise('categories', 'put', category);
+       });
+    } else if (!loading) {
+      idbPromise('categories', 'get').then(categories =>{
+        dispatch({
+          type: UPDATE_CATEGORIES,
+          categories: categories
+        });
+      });
     }
   }, [categoryData, dispatch]);
 

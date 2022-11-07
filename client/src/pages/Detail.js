@@ -7,6 +7,7 @@ import {REMOVE_FROM_CART, UPDATE_PRODUCTS, UPDATE_CART_QUANTITY, ADD_TO_CART} fr
 
 import { QUERY_PRODUCTS } from '../utils/queries';
 import spinner from '../assets/spinner.gif';
+import {idbPromise} from '../utils/helpers';
 
 function Detail() {
   const [state, dispatch] = useStoreContext();
@@ -29,11 +30,20 @@ function Detail() {
         _id: id,
         purchaseQuantity: parseInt(itemInCart.purchaseQuantity) +1
       });
+
+      //if we're updating quantity, use existing item data and increment purchase quantity value by one.
+      idbPromise('cart', 'put', {
+        ...itemInCart,
+        purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1
+      });
     } else {
       dispatch({
         type: ADD_TO_CART,
         product: {...currentProduct, purchaseQuantity: 1}
       });
+
+      //if product isn't in the cart, add it to the current shopping cart in indexedDB
+      idbPromise('cart', 'put', {...currentProduct, purchaseQuantity: 1});
     }
   }
   console.log(state);
@@ -43,8 +53,11 @@ function Detail() {
       type: REMOVE_FROM_CART,
       _id: currentProduct._id
     });
-  };
 
+    //upon removal from cart, delete the item from indexedDB using the 'currentProduct._id' to locate what to remove
+    idbPromise('cart', 'delete',{...currentProduct});
+  };
+  //useEffect will will constantly check the dependency array for a change in any of the values listed in it and continue to run the useEffect() Hook's callback function until that data stops changing 
   useEffect(() => {
     //First check if there is data in our global state's products array
     if (products.length) {
@@ -57,6 +70,20 @@ function Detail() {
       dispatch({
         type: UPDATE_PRODUCTS,
         products: data.products
+      });
+
+      data.products.forEach((product) =>{
+        idbPromise('products','put', product);
+      });
+    }
+    // get cache from idb
+    else if (!loading) {
+      //first get from indexDB and then update the global product state.
+      idbPromise('products','get').then((indexedProducts)=>{
+        dispatch({
+          type: UPDATE_PRODUCTS,
+          products: indexedProducts
+        });
       });
     }
     //second arg: the dependency array (Hook's functionality is dependent on them to work and only runs when it detects that they've changed in value)
